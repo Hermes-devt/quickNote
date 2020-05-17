@@ -1,0 +1,41 @@
+{
+
+  "manifest_version": 2,
+  "name": "Notes",
+  "version": "1.0",
+
+  "description": "Allows you to easily take notes whereever you are",
+
+  "icons": {
+    "48": "note.png"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["*://*/*"],
+      "js": ["content-script.js"]
+    }
+  ],
+
+  "permissions": [
+    "sessions",
+    "storage",
+    "tabs",
+    "activeTab"
+  ],
+
+  "web_accessible_resources": [
+    "breathing.png"
+  ],
+
+  "browser_action": {
+    "default_icon": "note.png",
+    "default_title": "Notes",
+    "default_popup": "popup/mindfulness.html"
+  },
+
+  "background": {
+    "scripts": ["background.js"]
+  }
+
+}

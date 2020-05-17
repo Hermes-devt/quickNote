@@ -1,0 +1,43 @@
+
+body{
+  /* background-color:rgb(33, 205, 33); */
+  width: 280px;
+  border-radius: 20px;
+  background-color: hsl(0, 0%, 13%)	;
+  color: orange;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.buttons{
+  padding-top: 20px;
+  padding-left: 0px;
+}
+
+.button{
+  color: orange;
+  background-color: hsl(0, 0%, 13%)	;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-left: 5px;
+  transition: all 0.5s;
+}
+
+.button:hover{
+  color: white;
+}
+
+input{
+  display:inline-block;
+  height: 15px;
+  margin-bottom: 5px;
+  width: 280px;
+  font-size: 12px;
+  padding-left: 5px;
+}
+
+.subHeadline{
+  font-size: 16px;
+  margin: 5px 0px;
+}
