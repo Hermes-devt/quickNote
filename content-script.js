@@ -73,7 +73,7 @@ const generate = {
         return documentList;
       },
 
-      documentItem: (item, index, that)=>{
+      documentItem: (item, index, that=this)=>{
         let doc = document.createElement('div');
         doc.className = 'noteDocumentTitel';
         doc.style.cssText = cssStyle.docTitel
@@ -91,7 +91,7 @@ const generate = {
         storageData.documents.active = activeDocument;
         const {list, active} = storageData.documents;
         document.getElementById('notetakingTextarea').value = list[active].text;
-      }
+      },
     },
 
     createDocumentButton: ()=>{
@@ -99,7 +99,17 @@ const generate = {
       createDoc.style.cssText = cssStyle.docTitel + 'width: 20px; text-align: center;';
       createDoc.innerText = '+';
       createDoc.addEventListener( 'click', ()=>{
-        console.log('clicked on create new document!');
+        storageData.documents.list.push( { name: 'Item3', text: '', });
+
+        let documentList = document.getElementById('notesDocumentList')
+        let doc = document.createElement('div');
+        doc.className = 'noteDocumentTitel';
+        doc.style.cssText = cssStyle.docTitel
+        const indexValue = storageData.documents.list.length -1;
+        doc.innerText = 'Note' + (parseInt(indexValue) + 1);
+        doc.addEventListener( 'click', ()=>{ generate.topbar.documentList.setActive ( indexValue ); });
+        documentList.appendChild( doc );
+        setTimeout( ()=>{ generate.topbar.documentList.setActive( storageData.documents.list.length - 1 ); }, 100);
       });
       return createDoc;
     },
@@ -121,30 +131,28 @@ function setNotes(data){
 
 
 let pastActiveElement = document.body;
-const eventListener = (function setKeyupFunctionality(){
-  document.addEventListener( 'keyup', function temp(e){
-    if( !(e.key === '#' || e.key === 'Escape')) return;
-  
-    let element = document.getElementById('notetaking');
-    if( e.key === '#'){
-  
-      if( element.style.display === 'none'){
-        pastActiveElement = document.activeElement;
-        element.style.display = 'block';
-        document.getElementById('notetakingTextarea').focus();
-        return; }
-  
+document.addEventListener( 'keyup', function setKeyupFunctionality(e){
+  if( !(e.key === '#' || e.key === 'Escape')) return;
+
+  let element = document.getElementById('notetaking');
+  if( e.key === '#'){
+
+    if( element.style.display === 'none'){
+      pastActiveElement = document.activeElement;
       element.style.display = 'block';
-      pastActiveElement.focus();
-      return;
-    }
-  
-    if( e.key === 'Escape'){
-      element.style.display = 'none';
-      pastActiveElement.focus();
-    }
-  });
-}());
+      document.getElementById('notetakingTextarea').focus();
+      return; }
+
+    element.style.display = 'block';
+    pastActiveElement.focus();
+    return;
+  }
+
+  if( e.key === 'Escape'){
+    element.style.display = 'none';
+    pastActiveElement.focus();
+  }
+});
 
 
 function dragElement(elmnt) {
@@ -226,6 +234,6 @@ setTimeout( ()=>{
   });
 }, 1500);
 
-browser.runtime.connect().onDisconnect.addListener(function() {
-  document.removeEventListener("keyup", temp);
+browser.runtime.connect().onDisconnect.addListener((setKeyupFunctionality)=> {
+  document.removeEventListener("keyup", setKeyupFunctionality);
 })
