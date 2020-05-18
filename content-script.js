@@ -1,7 +1,6 @@
 
 window.browser = (function () { return window.msBrowser || window.browser || window.chrome; })();
 
-console.log('log message');
 let storageData = null;
 // browser.storage.local.set({ extensionNotes: JSON.stringify(data) });
 browser.storage.local.get('extensionNotes', function(res){ 
