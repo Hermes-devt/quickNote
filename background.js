@@ -4,7 +4,14 @@ window.browser = (function () { return window.msBrowser || window.browser || win
 
 
 const data = {
-  textarea: [''],
+
+  documents: {
+    active: 0,
+    list: [
+      {name: 'Note1', text: ''},
+      {name: 'Note2', text: ''},
+    ]
+  },
   element: {
     pos:{ top: 0, left: 0, },
     size:{ width: 500, height: 300, }
