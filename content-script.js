@@ -178,7 +178,7 @@ const generate = {
 
           // Set the titel and action
           doc.innerText = 'Note' + (index + 1);
-          // doc.addEventListener( 'click', ()=>{ generate.topbar.documentList.setActive(index); });
+          doc.addEventListener( 'click', ()=>{ generate.topbar.documentList.setActive(index); });
           documentList.appendChild( doc );
         })
 
