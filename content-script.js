@@ -87,6 +87,9 @@ const generate = {
         doc.innerText = 'Note' + (index + 1);
         doc.addEventListener( 'click', ()=>{ 
           that.setActive(index); 
+
+          setTimeout( ()=>{ document.getElementById('notetakingTextarea').focus(); }, 50);
+
         });
         return doc;
 
@@ -127,8 +130,6 @@ const generate = {
           doc.addEventListener( 'click', ()=>{ generate.topbar.documentList.setActive ( indexValue ); });
         documentList.appendChild( doc );
         setTimeout( ()=>{ generate.topbar.documentList.setActive( storageData.documents.list.length - 1 ); }, 100);
-
-        // setTimeout( ()=>{ browser.storage.local.set({ extensionNotes: JSON.stringify(storageData) }); }, 100);
       });
 
 
@@ -172,7 +173,6 @@ const generate = {
           let doc = document.createElement('div');
           doc.className = 'noteDocumentTitel';
           doc.style.cssText = cssStyle.docTitel
-
           //set the style of the active element
           if( active === index ){ doc.style.backgroundColor = 'black'; doc.style.color = 'white'; }
 
@@ -184,6 +184,10 @@ const generate = {
 
         //save the list.
         browser.storage.local.set({ extensionNotes: JSON.stringify(storageData)});
+        setTimeout( ()=>{
+          console.log('here2')
+          document.getElementById('notetakingTextarea').focus();
+        }, 100);
       });
 
       //Save the new list.
