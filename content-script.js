@@ -15,7 +15,6 @@ const generate = {
   container: ()=>{
     let container = document.createElement('div');
     container.setAttribute('css', '');
-    // container.style.cssText = "-moz-user-select: -moz-none; -khtml-user-select: none; -webkit-user-select: none; -ms-user-select: none;user-select: none;";
     container.style.position = 'fixed';
     container.style.zIndex = 999999999;
     container.style.height = '200px';
@@ -23,7 +22,6 @@ const generate = {
     container.ondrop = 'return true';
     container.id = 'notetaking';
     container.draggable = true;
-    console.log('top', data.element.pos.top, data.element.pos.left);
     container.style.top = data.element.pos.top + 'px';
     container.style.left = data.element.pos.left + 'px';
     container.style.display = 'none';
@@ -34,7 +32,6 @@ const generate = {
     let area = document.createElement('textarea');
     area.setAttribute('css', '');
     area.style.cssText = 'padding: 5; font-size: 13px; resize: both; height: 300px; width: 400px';
-    console.log('data', data);
     area.style.width = data.element.size.width;
     area.style.height = data.element.size.height;
     const {list, active} = data.documents;
@@ -55,9 +52,11 @@ const generate = {
 
       let documentList = this.documentList.init();
       let createDocumentButton = this.createDocumentButton();
+      let deleteDocumentButton = this.createDocumentButton2();
       topbar.appendChild(draggable);
       topbar.appendChild(documentList);
       topbar.appendChild( createDocumentButton);
+      topbar.appendChild( deleteDocumentButton );
       return topbar;
     },
 
@@ -85,7 +84,7 @@ const generate = {
         let doc = document.createElement('div');
         doc.className = 'noteDocumentTitel';
         doc.style.cssText = cssStyle.docTitel
-        doc.innerText = item.name;
+        doc.innerText = 'Note' + (index + 1);
         doc.addEventListener( 'click', ()=>{ 
           that.setActive(index); 
         });
@@ -111,19 +110,84 @@ const generate = {
       let createDoc = document.createElement('div');
       createDoc.style.cssText = cssStyle.docTitel + 'width: 20px; text-align: center; draggable: true';
       createDoc.innerText = '+';
+
       createDoc.addEventListener( 'click', ()=>{
-        storageData.documents.list.push( { name: 'Item3', text: '', });
+        //set storage
+        storageData.documents.list.push( { name: 'Note' + storageData.documents.list.length, text: '', });
+        storageData.documents.active = storageData.documents.list.length - 1;
+        //Save the new list.
+        browser.storage.local.set({ extensionNotes: JSON.stringify(storageData)});
 
         let documentList = document.getElementById('notesDocumentList')
-        let doc = document.createElement('div');
-        doc.className = 'noteDocumentTitel';
-        doc.style.cssText = cssStyle.docTitel
-        const indexValue = storageData.documents.list.length -1;
-        doc.innerText = 'Note' + (parseInt(indexValue) + 1);
-        doc.addEventListener( 'click', ()=>{ generate.topbar.documentList.setActive ( indexValue ); });
+          let doc = document.createElement('div');
+          doc.className = 'noteDocumentTitel';
+          doc.style.cssText = cssStyle.docTitel
+          const indexValue = storageData.documents.list.length -1;
+          doc.innerText = 'Note' + (parseInt(indexValue) + 1);
+          doc.addEventListener( 'click', ()=>{ generate.topbar.documentList.setActive ( indexValue ); });
         documentList.appendChild( doc );
         setTimeout( ()=>{ generate.topbar.documentList.setActive( storageData.documents.list.length - 1 ); }, 100);
+
+        // setTimeout( ()=>{ browser.storage.local.set({ extensionNotes: JSON.stringify(storageData) }); }, 100);
       });
+
+
+      return createDoc;
+    },
+
+    createDocumentButton2: ()=>{
+      let createDoc = document.createElement('div');
+      createDoc.style.cssText = cssStyle.docTitel + 'width: 20px; text-align: center; draggable: true';
+      createDoc.innerText = '-';
+      createDoc.addEventListener( 'click', ()=>{
+
+        if( storageData.documents.list.length === 1){
+          storageData.documents.list[0].text = '';
+          let textarea = document.getElementById('notetakingTextarea')
+          textarea.value = '';
+          textarea.focus();
+          return;
+        }
+
+        let {active} = storageData.documents;
+        //remove the document
+        storageData.documents.list.splice(active, 1);
+
+        //Clear out the documentlist
+        let documentList = document.getElementById('notesDocumentList')
+        documentList.innerHTML = "";
+
+        //Set active document
+        if( active > storageData.documents.list.length - 1) active--;
+        if( active < 0) active = 0;
+        storageData.documents.active = active;
+
+        //Set the textarea
+        let textarea = document.getElementById('notetakingTextarea')
+        textarea.value = storageData.documents.list[ active ].text;
+        textarea.focus();
+
+        //generate new list. 
+        storageData.documents.list.forEach( (item, index)=>{
+          let doc = document.createElement('div');
+          doc.className = 'noteDocumentTitel';
+          doc.style.cssText = cssStyle.docTitel
+
+          //set the style of the active element
+          if( active === index ){ doc.style.backgroundColor = 'black'; doc.style.color = 'white'; }
+
+          // Set the titel and action
+          doc.innerText = 'Note' + (index + 1);
+          // doc.addEventListener( 'click', ()=>{ generate.topbar.documentList.setActive(index); });
+          documentList.appendChild( doc );
+        })
+
+        //save the list.
+        browser.storage.local.set({ extensionNotes: JSON.stringify(storageData)});
+      });
+
+      //Save the new list.
+      // setTimeout( ()=>{ browser.storage.local.set({ extensionNotes: JSON.stringify(storageData) }); }, 100);
       return createDoc;
     },
   },
@@ -226,6 +290,7 @@ function storageChange(){
   browser.storage.local.get('extensionNotes', function(res){ 
       data = JSON.parse( res.extensionNotes) 
       const {active, list} = data.documents;
+      console.log('active', active);
       document.getElementById('notetakingTextarea').value = list[active].text;
     }
   );
