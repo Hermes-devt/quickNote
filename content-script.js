@@ -14,18 +14,26 @@ const cssStyle = {
 const generate = {
   container: ()=>{
     let container = document.createElement('div');
+    container.setAttribute('css', '');
+    // container.style.cssText = "-moz-user-select: -moz-none; -khtml-user-select: none; -webkit-user-select: none; -ms-user-select: none;user-select: none;";
     container.style.position = 'fixed';
     container.style.zIndex = 999999999;
+    container.style.height = '200px';
+    container.ondragstart = 'return true';
+    container.ondrop = 'return true';
     container.id = 'notetaking';
-    container.style.top = data.element.pos.top;
-    container.style.left = data.element.pos.left;
+    container.draggable = true;
+    console.log('top', data.element.pos.top, data.element.pos.left);
+    container.style.top = data.element.pos.top + 'px';
+    container.style.left = data.element.pos.left + 'px';
     container.style.display = 'none';
     return container;
   },
 
   textarea: ()=>{
     let area = document.createElement('textarea');
-    area.style.cssText = 'padding: 5; font-size: 13px; resize: both;';
+    area.setAttribute('css', '');
+    area.style.cssText = 'padding: 5; font-size: 13px; resize: both; height: 300px; width: 400px';
     console.log('data', data);
     area.style.width = data.element.size.width;
     area.style.height = data.element.size.height;
@@ -55,7 +63,7 @@ const generate = {
 
     draggable: ()=>{
       let draggable = document.createElement('div');
-      draggable.style.cssText = cssStyle.draggable;
+      draggable.style.cssText = cssStyle.draggable + "; draggable: true";
       draggable.innerText = 'Notes';
       draggable.id='notetakingheader';
       return draggable;
@@ -78,15 +86,20 @@ const generate = {
         doc.className = 'noteDocumentTitel';
         doc.style.cssText = cssStyle.docTitel
         doc.innerText = item.name;
-        doc.addEventListener( 'click', ()=>{ that.setActive(index); });
+        doc.addEventListener( 'click', ()=>{ 
+          that.setActive(index); 
+        });
         return doc;
 
       },
 
       setActive: (activeDocument)=>{
         let docTitel = document.getElementsByClassName('noteDocumentTitel');
-        for( let III=0; III < docTitel.length; III++)
+        for( let III=0; III < docTitel.length; III++){
+          docTitel[III].setAttribute('css', '');
           docTitel[III].style.cssText = cssStyle.docTitel + 'background-color: white; color: black';
+        }
+
         docTitel[activeDocument].style.cssText = cssStyle.docTitel + 'background-color: black; color: white';
         storageData.documents.active = activeDocument;
         const {list, active} = storageData.documents;
@@ -96,7 +109,7 @@ const generate = {
 
     createDocumentButton: ()=>{
       let createDoc = document.createElement('div');
-      createDoc.style.cssText = cssStyle.docTitel + 'width: 20px; text-align: center;';
+      createDoc.style.cssText = cssStyle.docTitel + 'width: 20px; text-align: center; draggable: true';
       createDoc.innerText = '+';
       createDoc.addEventListener( 'click', ()=>{
         storageData.documents.list.push( { name: 'Item3', text: '', });
